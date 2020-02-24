@@ -1,3 +1,6 @@
+# ignore student-level data
+data/oka/*
+
 .DS_Store
 # History files
 .Rhistory
