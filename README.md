@@ -1,0 +1,1 @@
+k-entry-public-data
