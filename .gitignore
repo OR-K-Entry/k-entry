@@ -1,6 +1,10 @@
 # ignore student-level data
 data/oka/*
 
+# ignore working files
+data/nces/intermediary/*
+data/nces/working/*
+
 .DS_Store
 # History files
 .Rhistory
