@@ -1,0 +1,97 @@
+---
+title: "fbi_dataprep"
+author: "Rebecca Amodeo"
+date: "2/28/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Cleaning Crime Data for 582 project.
+
+### Project Overview
+
+I am evaluating whether there is a relationship between local crime levels, self-reported sense of safety, and public sentiment toward trade liberalization. 
+
+Public attitudes toward immigration may also be examined as a proxy.
+
+
+```{r Load Packages, include = FALSE}
+
+install.packages("pacman")
+library(pacman)
+p_load(tidyverse, tidymodels, caret, foreign)
+p_load(magrittr, dplyr, ggplot2, yardstick)
+p_load(skimr)
+
+```
+
+## Data Used
+This data set references **Jacob Kaplan's Concatenated Files: Uniform Crime Reporting Program Data: Offenses Known and Clearances by Arrest, 1960-2017** available through <https://www.openicpsr.org/openicpsr/project/100707/version/V12/view;jsessionid=1B7E6477C685C1520FD202C867355F75> 
+
+```{r Load Data, include = FALSE}
+
+fbi.09 <- read_csv("offenses_known_monthly_2009.csv")
+fbi.10 <- read_csv("offenses_known_monthly_2010.csv")
+fbi.11 <- read_csv("offenses_known_monthly_2011.csv")
+fbi.12 <- read_csv("offenses_known_monthly_2012.csv")
+fbi.13 <- read_csv("offenses_known_monthly_2013.csv")
+fbi.14 <- read_csv("offenses_known_monthly_2014.csv")
+fbi.15 <- read_csv("offenses_known_monthly_2015.csv")
+fbi.16 <- read_csv("offenses_known_monthly_2016.csv")
+fbi.17 <- read_csv("offenses_known_monthly_2017.csv")
+
+
+# limit to Oregon rows
+fbi.09 %<>% filter(state_abb == "OR")
+fbi.10 %<>% filter(state_abb == "OR")
+fbi.11 %<>% filter(state_abb == "OR")
+fbi.12 %<>% filter(state_abb == "OR")
+fbi.13 %<>% filter(state_abb == "OR")
+fbi.14 %<>% filter(state_abb == "OR")
+fbi.15 %<>% filter(state_abb == "OR")
+fbi.16 %<>% filter(state_abb == "OR")
+fbi.17 %<>% filter(state_abb == "OR")
+```
+
+
+## EDA
+
+```{r EDA, include = FALSE}
+
+# check it out... look for varibles w/o NAs
+skim(fbi.09)
+
+
+interest.character = c("ori", "ori9", "agency_name", "month",  "fips_state_code", "fips_county_code", "fips_state_county_code", "fips_place_code", "agency_type",  "population_group", "core_city_indication")
+
+interest.numeric = c("year", "population_1", "population", "zip_code", "actual_robbery_total", "actual_assault_total", "actual_all_crimes", "tot_clr_all_crimes", "unfound_all_crimes", "actual_index_violent", "actual_index_property", "actual_index_total", "clr_18_index_violent", "clr_18_index_property", "clr_18_index_total",  "unfound_index_violent", "unfound_index_property", "unfound_index_total")
+
+
+# limit to variables of interest
+
+fbi.09 %<>% select(interest.character, interest.numeric) 
+fbi.10 %<>% select(interest.character, interest.numeric) 
+fbi.11 %<>% select(interest.character, interest.numeric) 
+fbi.12 %<>% select(interest.character, interest.numeric) 
+fbi.13 %<>% select(interest.character, interest.numeric) 
+fbi.14 %<>% select(interest.character, interest.numeric) 
+fbi.15 %<>% select(interest.character, interest.numeric)
+fbi.16 %<>% select(interest.character, interest.numeric) 
+fbi.17 %<>% select(interest.character, interest.numeric) 
+```
+
+
+## Compile Data for k-entry
+
+```{r Export File, include = FALSE}
+oregon_crime = rbind.data.frame(fbi.09, fbi.10, fbi.11, fbi.12, fbi.13, fbi.14, fbi.15, fbi.16, fbi.17)
+
+write.csv(oregon_crime, file = "crime.csv")
+
+
+```
+
+
