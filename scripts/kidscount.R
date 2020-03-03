@@ -63,7 +63,7 @@ new_names <- c(
   "n_suppnutrition_children", "n_tempassist_children", 
   "percent_poverty_children", "percent_foodinsecure_children", 
   "percent_frl_children", "per100_childcareslots_children", 
-  "n_unemploydaycare_children", "percent_noschoolage34_children",
+  "n_emprelatedaycare_children", "percent_noschoolage34_children",
   "percent_g3readprof_children", "percent_g3mathprof_children",
   "percent_g8readprof_children", "percent_g8mathprof_children",
   "percent_cohortgrad_children", "percent_homeless_children",
@@ -74,7 +74,7 @@ new_names <- c(
   "per1000_abuseneglect_children", "per1000_threatharm_children",
   "per1000_juvarrest_children", "per1000_juvjusref_children",
   "n_fostercare_children", "percent_fostercare_children", 
-  "percent_stablefostercare_children", "percent_exitfostercare_children",
+  "percent_stablefostercare_children", "n_exitfostercare_children",
   "percent_ageoutfostercare_children"
 )
 
@@ -94,6 +94,7 @@ d <- d %>%
 
 write_csv(d, here::here("data", "kidscount", "kidscount.csv"))
  
+
 # txt <- pdf_text(list.files(here::here("data", "kidscount"), 
 #                            pattern = "^CFFO",
 #                            full.names = TRUE))
