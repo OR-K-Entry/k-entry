@@ -9,16 +9,16 @@ oka <- map_df(list.files(here::here("data", "oka"),
   mutate(year = as.numeric(gsub(".+-(.+)", "20\\1", schl_yr)))
 
 oka <- oka %>% 
-  select(year, a_dist_id, a_schl_id, ssid = rpt_chk_digit_stdnt_id, gender, 
-         ethnic_cd, self_reg_av = al_s_ravg, interpersonal = al_i_savg,
-         math_score = e_ma_to_tscore, 
+  select(year, a_dist_id, a_schl_id, ssid_ind = rpt_chk_digit_stdnt_id, gender_ind = gender, 
+         ethnic_cd_ind = ethnic_cd, self_reg_av_ind = al_s_ravg, interpersonal_ind = al_i_savg,
+         math_score_ind = e_ma_to_tscore, 
          ln_score1 = e_lit_l_ncorr, ln_score2 = e_lit_m1corr, 
          ls_score1 = e_lit_l_scorr, ls_score2 = e_lit_m2corr, 
          ls_score3 = e_lit_m6corr,
-         ln_uppercase_score = e_lit_m4corr,
-         ln_lowercase_score = e_lit_m5corr) %>% 
-  mutate(ln = coalesce(ln_score1, ln_score2),
-         ls = coalesce(ls_score1, ls_score2, ls_score3)) %>% 
+         ln_uppercase_score_ind = e_lit_m4corr,
+         ln_lowercase_score_ind = e_lit_m5corr) %>% 
+  mutate(ln_ind = coalesce(ln_score1, ln_score2),
+         ls_ind = coalesce(ls_score1, ls_score2, ls_score3)) %>% 
   select(-matches("\\d"))
 oka
 # kidscount

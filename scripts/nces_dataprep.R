@@ -262,9 +262,9 @@ nces <- reduce(l, left_join) %>%
 
 new_labs <- nces %>%
   count(race_eth) %>%
-  mutate(new_col_names = c("re_amind", "re_asian", "re_black", "re_hisp", 
-                           "re_nathi", "re_missing", "re_missing", "re_multi", 
-                           "re_white", "re_missing")) %>%
+  mutate(new_col_names = c("re_amind_sch", "re_asian_sch", "re_black_sch", "re_hisp_sch", 
+                           "re_nathi_sch", "sch_re_missing_sch", "re_missing_sch", "re_multi_sch", 
+                           "re_white_sch", "re_missing_sch")) %>%
   select(-n)
 
 race_eth <- nces %>%
@@ -275,7 +275,7 @@ race_eth <- nces %>%
   mutate(prop = tot_race_eth / total) %>%
   select(-tot_race_eth) %>%
   spread(new_col_names, prop, fill = 0) %>%
-  rename(tot_enrollment = total)
+  rename(tot_enrollment_sch = total)
 
 gender <- nces %>%
   select(ncessch, school_year, race_eth, gender, n, total) %>%
@@ -285,21 +285,21 @@ gender <- nces %>%
   mutate(prop = tot_gen / total, 
          gender = ifelse(gender == "Not specified" | 
                            is.na(gender), 
-                         "prop_gen_miss",
+                         "prop_gen_miss_sch",
                          gender)) %>%
   select(-tot_gen) %>%
   spread(gender, prop) %>%
-  select(ncessch:Female, prop_gen_miss) %>%
-  rename(prop_gen_female = Female,
-         tot_enrollment = total)
+  select(ncessch:Female, prop_gen_miss_sch) %>%
+  rename(prop_gen_female_sch = Female,
+         tot_enrollment_sch = total)
 
 nces <- nces %>%
   distinct(ncessch, state, lat, lon, cbsa, school_year, cbsatype, cnty, nmcnty,
            fipst, statename, sch_name, lea_name, st_leaid, leaid, st_schid,
            sy_status_text, sch_type_text, recon_status, charter_text,
-           g_pk_offered, tot_enrollment = total, frl, 
+           g_pk_offered, tot_enrollment_sch = total, frl, 
            teacher_fte = teachers) %>%
-  mutate(prop_frl = frl / tot_enrollment) %>%
+  mutate(prop_frl_sch = frl / tot_enrollment_sch) %>%
   select(-frl) %>%
   drop_na(st_schid)
 
