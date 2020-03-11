@@ -62,6 +62,7 @@ or <- get_acs("tract",
                             home_built_pre1940 = "B25034_011",
                             foodstamps_snap_n = "B22010_001",
                             foodstamps_snap_received = "B22010_002",
+                            median_inc_trc = "B19326_001",
                             health_insurance_n = "B27003_001",
                             health_insurance = "B27003_002",
                             ratio_incpov_n = "B05010_001",
@@ -78,6 +79,7 @@ or_wide <- or %>%
 
 or_wide <- or_wide %>% 
   mutate(
+    med_inc12_trc = median_inc_trc,
     percent_nohighschool_trc = ed_attain_lths/ed_attain_n,
     percent_highschool_trc = ed_attain_hsgrad/ed_attain_n,
     percent_somecollege_trc = ed_attain_somecol/ed_attain_n,
@@ -127,7 +129,7 @@ or_wide <- or_wide %>%
     percent_incpov12_trc = ratio_incpov_1to2/ratio_incpov_n,
     percent_incpovgt2_trc = ratio_incpov_gt2/ratio_incpov_n
   ) %>% 
-  select(GEOID:county, starts_with("percent")) %>% 
+  select(c(GEOID:county, starts_with("percent"), med_inc12_trc)) %>% 
   mutate_if(is.numeric, ~.*100)
 
 ed <- or_wide %>% 

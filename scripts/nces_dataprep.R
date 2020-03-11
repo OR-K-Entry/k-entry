@@ -18,7 +18,7 @@ ccd_dir <- c(
 ccd_mem <- c(
   mem_15 = "https://nces.ed.gov/ccd/Data/zip/ccd_sch_052_1415_w_0216161a_txt.zip",
   mem_16 = "https://nces.ed.gov/ccd/Data/zip/ccd_sch_052_1516_w_2a_011717_csv.zip",
-  mem_17 = "https://nces.ed.gov/ccd/Data/zip/ccd_SCH_052_1617_l_2a_11212017_CSV.zip",
+  mem_17 = "https://nces.ed.gov/ccd/Data/zip/ccd_SCH_052_1617_l_2a_11212017_csv.zip",
   mem_18 = "https://nces.ed.gov/ccd/Data/zip/ccd_sch_052_1718_l_1a_083118.zip"
 )
 
@@ -167,7 +167,7 @@ l$ccd_mem[3:4] <- l$ccd_mem[3:4] %>%
 		select(.x, 
 			SCHOOL_YEAR, FIPST, STATENAME, SCH_NAME, 
 			ST_LEAID, LEAID, ST_SCHID, NCESSCH,
-			n = STUDENT_COUNT, race_eth = RACE_ETHNICITY, 
+			TOTAL = n, race_eth = RACE_ETHNICITY, 
 			grade = GRADE, gender = SEX) %>%
 		drop_na(n) %>%
 		filter(STATENAME == "OREGON") %>%
