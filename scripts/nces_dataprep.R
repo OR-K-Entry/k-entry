@@ -1,4 +1,5 @@
 library(tidyverse)
+# line 84 has mac-specific code ... figure out PC version
 
 geo <- c(
   geo_15 = "https://nces.ed.gov/ccd/Data/zip/EDGE_GEOIDS_201415_PUBLIC_SCHOOL_csv.zip",
@@ -162,17 +163,18 @@ l$ccd_mem[1:2] <- l$ccd_mem[1:2] %>%
 		filter(as.numeric(n) > 0 & STATENAME == "OREGON")
 	)
 
-l$ccd_mem[3:4] <- l$ccd_mem[3:4] %>%
+#l$ccd_mem[3:4] <- 
+  l$ccd_mem[3:4] %>%
 	map(~
 		select(.x, 
 			SCHOOL_YEAR, FIPST, STATENAME, SCH_NAME, 
 			ST_LEAID, LEAID, ST_SCHID, NCESSCH,
-			TOTAL = n, race_eth = RACE_ETHNICITY, 
+			TOTAL = TOTAL_INDICATOR, race_eth = RACE_ETHNICITY, 
 			grade = GRADE, gender = SEX) %>%
-		drop_na(n) %>%
+		drop_na(TOTAL) %>%
 		filter(STATENAME == "OREGON") %>%
 		group_by(NCESSCH) %>%
-		mutate(TOTAL = sum(as.numeric(n)))
+		mutate(TOTAL = sum(parse_number(TOTAL)))
 	)
 
 l$ccd_mem <- reduce(l$ccd_mem, bind_rows) %>%
