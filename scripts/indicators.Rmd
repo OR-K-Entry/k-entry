@@ -1,0 +1,206 @@
+---
+title: "Indicators"
+author: "Rebecca Amodeo"
+date: "4/8/2020"
+output:
+  html_document:
+    theme: journal
+  pdf_document: default
+  word_document: default
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r packages, include = FALSE}
+library(pacman)
+p_load(tidycensus, tidyverse, colorspace, readr, purrr, magrittr)
+```
+
+## Crime / Safety Indicators
+
+1. Look for outliers and reporting changes.
+2. See Emily Owens' work on this. 
+3. The best measured crime will likely be murder. And to make murders comparable or across counties, population is needed to calculate murder per capita (usually researchers focus on murders per 10,000 or 100,000 because it's fairly rare).
+4. Start by preparing and checking out summary stats to look for outliers to make sure they are reasonable.
+
+
+### Murder Rates
+* Though I had hoped for better insights from the UCR data, I don't trust the murder totals by county-year due to the number of Oregon murders reported in Multnomah County via the FBI office there. Notably, the 2015 mass shooting that took 9 lives at Roseburg's Umpqua Community College is not accounted for in Douglas County murder rate for that year.
+
+#### Saving Mrate Output
+Dataset of murder rate by county-year: county_mrate_all_years.csv.
+
+*Update as better data are available.
+```{r save output, include =FALSE}
+#write.csv(mrate, file = #"C:/My_R/k_entry/data/fbi/county_mrate_all_years.csv")
+```
+
+
+### Crossover Crime & Education issues
+
+* Has there been a school or mass shooting in same tract/district/etc. in the past X years?
+
+* Relationship between school spending per child (or capita) and crim-j spending.
+
+
+
+## Economic Indicators
+Indicators for our EC index
+
+
+Notes
+
+*	Working w Ben Hanson on crime and health indicators and with Jon Davis on crime and inequality indicators.
+* https://www.thoughtco.com/index-for-research-3026543
+* Question to answer: In ACS, do HH include individuals or family units that are homeless/transient in any way?
+
+### Economic Indicators
+
+* The economic health of a community is not the same as the economic health of the individuals or families.
+* While there are data on many of the indicators below, much of it is only available at the tract level in the decennial, by address mapping/matching, or is not available.
+
+
+>County-level data, particularly by state, are easier to come by and may be useful to us for some metrics of segregation. School-level or school-district-level race/ethnicity distribution, economic proxies (like rate of qualification for free or reduced school lunch), etc. can be used as the “neighborhoods” within counties when tract-level data are not available.    Schools < School Districts < Counties
+
+
+
+### Individual EC Health
+1.	Income
+  +	Individual earner
+  +	Family earnings
+  +	Relation to poverty level
+    +	Extreme poverty =< 0.5*poverty_line
+2.	Community college access
+3.	Financial Inclusion
+  +	Banking access
+4.	Inequality
+  +	Pay attention to changes over time. They are important.
+  +	Gini index – difference between perfectly equally distributed income and the true distribution.
+    +	Does not indicate where income is concentrated among population
+  +	Palma Ratio – mean household income of top ventile divided by mean household income of bottom 40%
+    +	Modified Palma Ratio – using the top decile instead of top ventile.
+    +	When using ACS data, household income is not adjusted for size or number of workers. ACS data show 5 categories of household size by workers, but the info is not enough to extrapolate adjustment.
+  +	Ratio of Mean Annual Income – RMAI – mean individual income of top quintile divided by mean individual income of bottom quintile.
+    +	Caution – ACS data for low-population areas my see income bracket means distorted by a few observations in given category.
+  +	Comparison of local inequality measure to national level.
+
+
+### Community EC Health
+1.	Income
+  +	Rates of significant relationships to poverty level (extreme poverty, 1x, etc.)
+  +	Rates of total poverty
+2.	Income sources – homogeneity or lack thereof in income sources via lack of high-pay jobs
+  +	Hint: wider range of wage and salary jobs = better.
+
+
+
+```{r data pull acs 2017, include = FALSE}
+theme_set(theme_minimal(15) +
+            theme(legend.position = "bottom",
+                  legend.key.width = unit(4, "cm"))
+)
+#census_api_key("6c1238eaaee8c3a0130968e22751936b8096eded", install = TRUE)
+
+or <- get_acs("tract",
+              variables = c(pop_trc = "B01003_001",
+                            gini_trc = "B19083_001",
+                            pop_15up_trc = "B06010_001",
+                            noinc_15up_trc = "B06010_002",
+                            yesinc_15up_trc = "B06010_003",
+                            est_tot_transp2work = "B08124_001",
+                            ratio_incpov_trc = "B05010_001",
+                            per_cap_inc_trc = "B19301_001",
+                            per_cap_wht_inc_trc = "B19301A_001",
+                            avg_hh_inc_quint_lowest_trc = "B19081_001",
+                            avg_hh_inc_quint_2ndlow_trc = "B19081_002",
+                            avg_hh_inc_quint_3rdlow_trc = "B19081_003",
+                            avg_hh_inc_quint_4thlow_trc = "B19081_004",
+                            avg_hh_inc_quint_top_trc = "B19081_005",
+                            avg_hh_inc_vent_top_trc = "B19081_006",
+                            hh_tot_n_trc = "B08202_001",
+                            hh_noworker_n_trc = "B08202_002"),
+              state = "OR",
+              geometry = FALSE) %>% 
+  mutate(county = gsub(".+\\d,\\s(.+),.+", "\\1", NAME))
+
+#names(or)
+#view(or$variable)
+
+or_wide <- or %>% 
+  select(-moe) %>% 
+  spread(variable, estimate) %>%
+  mutate(NAME = gsub("^(.+\\d),\\s.+", "\\1", NAME), geoid = as.numeric(GEOID),
+         wht_prem_p_trc = per_cap_wht_inc_trc/per_cap_inc_trc)
+```
+
+
+
+#### Palma Ratio 
+Divide the mean of top earning ventile of households by the mean of lowest earning 40% of households.
+```{r data manipulation palma ratio , echo = FALSE}
+n = or_wide$avg_hh_inc_vent_top_trc
+de = or_wide$avg_hh_inc_quint_lowest_trc + or_wide$avg_hh_inc_quint_2ndlow_trc
+d = de/2
+
+or_wide$palma = n/d
+```
+
+
+
+#### RMAI - Ratio of Mean Annual Income
+Divide the mean income of the top quintile of individuals by the mean income of the bottom quintile.
+
+* We still need to find average individual income by census tract if we want this measure!
+```{r (rami), echo = FALSE}
+# a = 
+# b = 
+# 
+# or_wide$rami = a/b
+```
+
+
+### Other EC Indicators
+* Does the county have a community college?
+Oregon's 17 community colleges: <https://www.oregon.gov/highered/institutions-programs/ccwd/Pages/community-colleges.aspx>
+
+* Prestige scores (Use 2010 adjusted.)
+
+
+
+### Output
+Dataset of ecomomic indicators: ec_indicators_trc.csv.
+
+*Update this once RMAI is calculated.
+```{r output ec, include = FALSE}
+## update once rmai is available
+#write.csv(or_wide, file = "C:/My_R/k_entry/ec_indicators_trc.csv")
+```
+
+
+## Health Indicators
+
+* The health of a community is not the same as the health of the individuals or families.
+
+
+
+
+
+## Alt Oregon population by county-year
+Alt pop count available in pdxeduORpop.csv.
+
+County population data collected from Portland State University site: <https://www.pdx.edu/prc/population-reports-estimates>.
+
+Population Data Attribution:
+
+Prepared by Population Research Center
+
+College of Urban and Public Affairs
+
+For Portland State University
+
+Information about the data is available at <https://www.pdx.edu/prc/annual-population-estimates>.
+
+```{r data OR pop, include =FALSE}
+#pop = read_csv("C:/My_R/k_entry/data/pdxeduORpop.csv")
+```

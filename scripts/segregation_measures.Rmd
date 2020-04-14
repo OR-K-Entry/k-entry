@@ -1,0 +1,93 @@
+---
+title: "segregation_measures"
+author: "Rebecca Amodeo"
+date: "4/10/2020"
+## Oregon's Racial Segregation
+
+1.	Residential segregation in Oregon: <https://www.oregon.gov/OHA/PH/ABOUT/Documents/indicators/segregation.pdf>
+2.	Desegregation and Multiculturalism in the Portland Public Schools: <https://www.ohs.org/research-and-library/oregon-historical-quarterly/upload/OHQ_111_1-Johnson-and-Williams_PPS.pdf>
+3.	Timeline of Oregon and U.S. Racial, Immigration, and Educational History: <https://www.portlandoregon.gov/bps/article/412697>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(tidycensus)
+library(sp)
+library(sf)
+library(seg)
+```
+
+## Segregation Measures
+Modifying Daniel's segregation script for my indicators.
+
+### Safety Index
+```{r safety, echo = FALSE}
+
+
+
+
+
+```
+
+
+### Economics Indicators
+```{r Seg, echo = FALSE}
+geo_tracts <- tigris::tracts("OR")
+
+tracts <- st_as_sf(geo_tracts) %>% 
+  select(GEOID) %>% 
+  left_join(or_wide) %>%
+  mutate(NAME = gsub("^(.+\\d),\\s.+", "\\1", NAME))
+
+calc_seg <- function(data, var1, var2, bw = c(0.3, 0.7)) {
+  mods <- map(bw,
+    ~spseg(as_Spatial(data$geometry), 
+      select(st_drop_geometry(data), 
+        !!enquo(var1), 
+        !!enquo(var2)), 
+      smoothing = "kernel", 
+      sigma = .x)
+  )
+  names(mods) <- bw
+  mods
+}
+
+pull_seg_estimates <- function(l) {
+  tibble(binwidth = names(l),
+         d = map_dbl(l, ~.x@d),
+         r = map_dbl(l, ~.x@r),
+         h = map_dbl(l, ~.x@h))
+}
+
+tracts_seg <- tracts %>%
+  nest(data = c(NAME, pre_cap_wht_inc_trc, per_cap_inc_trc, geometry)) %>%
+  mutate(seg_mod = map(data, calc_seg, pre_cap_wht_inc_trc, per_cap_inc_trc, bw = 0.3), seg_est = map(seg_mod, pull_seg_estimates)) %>%
+  select(county, seg_est) %>%
+  unnest(seg_est)
+
+write_csv(tracts_seg, here::here("data", "or-county-seg-whtinc.csv"))
+
+#tracts_seg <- read_csv(here::here("data", "or-county-seg.csv"))
+
+counties <- tigris::counties("OR", cb = TRUE) %>%
+  st_as_sf() %>%
+  mutate(county = paste(NAME, "County"))
+
+left_join(counties, tracts_seg)  %>%
+  mapview::mapview(zcol = "d")
+
+districts <- tigris::school_districts("OR") %>%
+  st_as_sf()
+
+#Just a bit of extra code if you want a quick interactive map. Note
+#there’s… not a lot of between-county variance in these estimates.
+
+
+counties <- tigris::counties("OR", cb = TRUE) %>%
+  st_as_sf() %>%
+  mutate(county = paste(NAME, "County"))
+
+left_join(counties, tracts_seg)  %>%
+  mapview::mapview(zcol = "d")
+
+```
