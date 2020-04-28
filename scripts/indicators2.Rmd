@@ -1,0 +1,35 @@
+---
+title: "indicators2"
+author: "Rebecca Amodeo"
+date: "4/27/2020"
+output:
+  html_document:
+    theme: journal
+  pdf_document: default
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r packages, include = FALSE}
+install.packages("pacman")
+library(pacman)
+p_load(here, tidycensus, tidyverse, colorspace, readr, purrr, magrittr)
+```
+
+## Processing EC Indicators from Census Data
+Starts with importing the .csv of economic indicators produced in indicators.Rmd in this project. 
+
+```{r load data}
+indic = read_csv(here("data/ec_indicators_trc.csv"))
+```
+
+## Prelim Exploration
+
+```{r skim, echo=FALSE}
+skimr::skim(indic)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

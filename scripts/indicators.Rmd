@@ -1,7 +1,7 @@
 ---
 title: "Indicators"
 author: "Rebecca Amodeo"
-date: "4/8/2020"
+date: "4/27/2020"
 output:
   html_document:
     theme: journal
@@ -13,8 +13,9 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r packages, include = FALSE}
+install.packages("pacman")
 library(pacman)
-p_load(tidycensus, tidyverse, colorspace, readr, purrr, magrittr)
+p_load(here, tidycensus, tidyverse, colorspace, readr, purrr, magrittr)
 ```
 
 ## Crime / Safety Indicators
@@ -33,7 +34,7 @@ Dataset of murder rate by county-year: county_mrate_all_years.csv.
 
 *Update as better data are available.
 ```{r save output, include =FALSE}
-#write.csv(mrate, file = #"C:/My_R/k_entry/data/fbi/county_mrate_all_years.csv")
+# write.csv(mrate, file = here(data/fbi/county_mrate_all_years.csv))
 ```
 
 
