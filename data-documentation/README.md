@@ -1,5 +1,33 @@
-Data Documentation for k-entry project
+---
+title: "Data Documentation for k-entry project"
+output:
+  html_document:
+    theme: journal
+  pdf_document: default
+  word_document: default
+---
 
+<script type="text/javascript">
+  // When the document is fully rendered...
+  $(document).ready(function() {
+    // ...select all header elements...
+    $('h1, h2, h3, h4, h5').each(function() {
+      // ...and add an id to them corresponding to their 'titles'
+      $(this).attr('id', $(this).html());
+    });
+  });
+</script>
+
+
+### Quick Links 
+
+<a href="#Variables Used">Go to Variables Used</a><br>
+<a href="#Data Source Codes">Go to Data Source Codes</a><br>
+<a href="#Level Codes">Go to Level Codes</a>
+
+
+
+## Variables Used # {#variables_used}
 |Variable name | Description    | Variable type| Data source |
 |:-------------|:---------------|:-------------|:------------|
 |GEOID | Census Geography ID | Character | US Census | 
@@ -162,3 +190,34 @@ Data Documentation for k-entry project
 | palma	| Ratio: mean of top earning ventile of households divided by the mean of lowest earning 40% of households	| Double | BRT Census	BRT indicators.Rmd
 | rmai |	Ratio of Mean Annual Income: mean income of top quintile of individual earnings divided by mean income of bottom quintile of individual earnings	|	Double |	BRT Census	BRT indicators.Rmd
 | wht_prem_p_trc |	Average earnings premium for white-identified person as proportion of average earnings for total population.	|	Double |	BRT Census	BRT indicators.Rmd
+
+
+## Data Source Codes # {#data_sources}
+
+|Data Source Friendly Name | Description  | Reference |
+|:-------------|:---------------|:---------------|
+| Census | from publicly avavilable ACS 2017 (5 year) |
+| BRT Census | BRT manipulations of Census data |
+| NCES| from publicly available NCES |
+| BRT NCES | BRT manipulations of nces data |
+| Kidscount | publicly available Kidscount / Annie E Casey Foundation |
+| BRT KC | BRT manipulations of Kidscount data |
+| OKA | |
+
+
+## Level Codes # {#data_level_codes}
+Data level by variable name suffix
+
+|Level Code | Description  |
+|:-------------|:---------------|
+| ind	| individual (student) |
+| sch |	school |
+| lea | school disctict (local education agency) |
+| trc |	US Census tract |
+| cou |	county |
+
+
+<a href="#Variables Used">Go to Variables Used</a><br>
+<a href="#Data Sources">Go to Data Source Codes</a><br>
+<a href="#Level Codes">Go to Level Codes</a>
+
