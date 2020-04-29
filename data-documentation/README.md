@@ -17,7 +17,7 @@ output:
     });
   });
 </script>
-
+---
 
 ### Quick Links 
 
@@ -27,7 +27,7 @@ output:
 
 
 
-## Variables Used # {#variables_used}
+## Variables Used
 |Variable name | Description    | Variable type| Data source |
 |:-------------|:---------------|:-------------|:------------|
 |GEOID | Census Geography ID | Character | US Census | 
@@ -192,7 +192,7 @@ output:
 | wht_prem_p_trc |	Average earnings premium for white-identified person as proportion of average earnings for total population.	|	Double |	BRT Census	BRT indicators.Rmd
 
 
-## Data Source Codes # {#data_sources}
+## Data Source Codes
 
 |Data Source Friendly Name | Description  | Reference |
 |:-------------|:---------------|:---------------|
@@ -205,7 +205,7 @@ output:
 | OKA | |
 
 
-## Level Codes # {#data_level_codes}
+## Level Codes
 Data level by variable name suffix
 
 |Level Code | Description  |
