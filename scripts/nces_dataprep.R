@@ -163,19 +163,28 @@ l$ccd_mem[1:2] <- l$ccd_mem[1:2] %>%
 		filter(as.numeric(n) > 0 & STATENAME == "OREGON")
 	)
 
-#l$ccd_mem[3:4] <- 
-  l$ccd_mem[3:4] %>%
-	map(~
-		select(.x, 
-			SCHOOL_YEAR, FIPST, STATENAME, SCH_NAME, 
-			ST_LEAID, LEAID, ST_SCHID, NCESSCH,
-			TOTAL = TOTAL_INDICATOR, race_eth = RACE_ETHNICITY, 
-			grade = GRADE, gender = SEX) %>%
-		drop_na(TOTAL) %>%
-		filter(STATENAME == "OREGON") %>%
-		group_by(NCESSCH) %>%
-		mutate(TOTAL = sum(parse_number(TOTAL)))
-	)
+clean_ccd_y34 <- function(d) {
+  d <- d %>% 
+    select(SCHOOL_YEAR, FIPST, STATENAME, SCH_NAME, 
+           ST_LEAID, LEAID, ST_SCHID, NCESSCH,
+           TOTAL_INDICATOR, race_eth = RACE_ETHNICITY, 
+           grade = GRADE, gender = SEX, n = STUDENT_COUNT) %>%
+    drop_na(TOTAL_INDICATOR) %>% 
+    filter(STATENAME == "OREGON")
+  
+  race_eth <- d %>% 
+    filter(grepl("Category Set A", TOTAL_INDICATOR))
+  
+  totes <- d %>% 
+    filter(TOTAL_INDICATOR == "Education Unit Total") %>% 
+    select(NCESSCH, TOTAL = n)
+  
+  left_join(race_eth, totes) %>%
+    mutate(TOTAL = parse_number(TOTAL)) %>% 
+    select(SCHOOL_YEAR:NCESSCH, TOTAL, n, race_eth:gender) 
+}
+
+l$ccd_mem[3:4] <- map(l$ccd_mem[3:4], clean_ccd_y34)
 
 l$ccd_mem <- reduce(l$ccd_mem, bind_rows) %>%
 	janitor::clean_names() 
