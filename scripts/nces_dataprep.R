@@ -273,9 +273,10 @@ nces <- reduce(l, left_join) %>%
 
 new_labs <- nces %>%
   count(race_eth) %>%
-  mutate(new_col_names = c("re_amind_sch", "re_asian_sch", "re_black_sch", "re_hisp_sch", 
-                           "re_nathi_sch", "sch_re_missing_sch", "re_missing_sch", "re_multi_sch", 
-                           "re_white_sch", "re_missing_sch")) %>%
+  mutate(new_col_names = c("re_amind_sch", "re_asian_sch", "re_black_sch", 
+                           "re_hisp_sch", "re_nathi_sch", "re_missing_sch", 
+                           "re_multi_sch", "re_white_sch", 
+                           "re_missing_sch")) %>%
   select(-n)
 
 race_eth <- nces %>%
